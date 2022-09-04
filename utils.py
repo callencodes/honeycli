@@ -5,7 +5,7 @@ import inquirer
 from dotenv import load_dotenv
 from github import Github
 
-from files import react
+from files import react, express
 
 load_dotenv()
 
@@ -88,18 +88,20 @@ def do_project_setup(answers):
     data['scripts']['start'] = 'node index.js'
     with open('package.json', 'w') as p2:
       json.dump(data, p2, indent=4)
-    os.system(f"echo \"const express = require(\'express\')\nconst healthRouter = require('./routes/api/health')\nconst app = express()\nconst port = \'3000'\napp.use(\'/api/health\', healthRouter)\n\napp.listen(port, () => {OPEN_BRACKET}\n\tconsole.log('Listening...')\n{CLOSED_BRACKET})\n\nmodule.exports = app\" >> index.js")
+    with open('index.js', 'w') as i:
+      i.write(express.index_js)
     os.mkdir('routes')
     os.chdir('routes')
     os.mkdir('api')
     os.chdir('api')
-    os.system(f"echo \"const router = require(\'express\').Router()\n\n/* GET health */\nrouter.get(\'/\', async (req, res) => {OPEN_BRACKET}\n\tres.json({OPEN_BRACKET}\n\t\tname:\'{project_name}\',\n\t\talive:true\n\t{CLOSED_BRACKET})\n{CLOSED_BRACKET})\n\nmodule.exports = router \" >> health.js")
+    with open('health.js', 'w') as h:
+      h.write(express.health_js)
     startup_help = [f"cd {folder_path}", "npm start", 'In your browser, navigate to: http://localhost:3000/api/health']
   elif project_type == 'Python CLI':
     os.system(f"echo \"from setuptools import setup, find_packages\n\nsetup(\n\tname=\'{project_name}cli\', \n\tversion='0.0.0', \n\tpackages=find_packages(), \n\tinstall_requires=[\n\t\t'click'\n\t], \n\tentry_points=\'\'\'\n\t[console_scripts]\n\t{project_name}={project_name}cli:{project_name}cli\n\t\'\'\'\n)\" >> setup.py")
     os.system(f"echo \"import click\n\n@click.command()\ndef {project_name}cli():\n\tprint(\'Hello World!\')\" >> {project_name}cli.py")
     os.system(f"pip3 install --editable .")
-    startup_help = [project_name, f"NOTE: the path to this project is -> {cli_folder_path}"]
+    startup_help = [project_name, f"NOTE: the path to this project is -> {PATH}/{cli_folder_path}"]
   elif project_type == 'React (UI only)':
     os.system('npm init -y')
     os.system('npm install react react-dom react-router-dom')
