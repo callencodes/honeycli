@@ -98,6 +98,7 @@ def do_project_setup(answers):
       h.write(express.health_js)
     startup_help = [f"cd {folder_path}", "npm start", 'In your browser, navigate to: http://localhost:3000/api/health']
   elif project_type == 'Python CLI':
+    # TODO: Move 102 and 103 to files
     os.system(f"echo \"from setuptools import setup, find_packages\n\nsetup(\n\tname=\'{project_name}cli\', \n\tversion='0.0.0', \n\tpackages=find_packages(), \n\tinstall_requires=[\n\t\t'click'\n\t], \n\tentry_points=\'\'\'\n\t[console_scripts]\n\t{project_name}={project_name}cli:{project_name}cli\n\t\'\'\'\n)\" >> setup.py")
     os.system(f"echo \"import click\n\n@click.command()\ndef {project_name}cli():\n\tprint(\'Hello World!\')\" >> {project_name}cli.py")
     os.system(f"pip3 install --editable .")
